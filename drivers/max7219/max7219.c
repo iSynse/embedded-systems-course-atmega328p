@@ -20,7 +20,7 @@ void max7219_init(void) {
     spi_init();
     _delay_ms(100);  
     
-    // Configure MAX7219
+    
     max7219_write_register(MAX7219_REG_SHUTDOWN, 1);
     max7219_write_register(MAX7219_REG_DECODE, 0xFF);      
     max7219_write_register(MAX7219_REG_SCAN_LIMIT, 3);     
@@ -74,7 +74,7 @@ void max7219_display_gear_speed(uint8_t gear, uint16_t speed) {
     if (speed >= 100) {
         max7219_display_digit(1, (speed / 100) % 10);
     } else {
-        max7219_display_digit(1, 0x0F);  // Blank
+        max7219_display_digit(1, 0x0F);  
     }
     
   
