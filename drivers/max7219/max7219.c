@@ -5,7 +5,7 @@
 
 static void spi_init(void) {
   
-    DDRB |= (1 << 2) | (1 << 1) | (1 << 3);  
+    DDRB |= (1 << 5) | (1 << 3) | (1 << 2);  // SCK(PB5), MOSI(PB3), CS(PB2)
     
 
     SPCR = (1 << SPE) | (1 << MSTR) | (0 << SPR1) | (1 << SPR0);

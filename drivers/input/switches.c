@@ -21,15 +21,17 @@ static const uint8_t switch_pins[] = {
 #define NUM_SWITCHES (sizeof(switch_pins) / sizeof(switch_pins[0]))
 
 void switches_init(void) {
-  
-    DDRD &= ~((1 << PADDLE_UPSHIFT) | (1 << PADDLE_DOWNSHIFT) | (1 << BTN_12MM_1) | (1 << BTN_12MM_2));
-    PORTD |= (1 << PADDLE_UPSHIFT) | (1 << PADDLE_DOWNSHIFT) | (1 << BTN_12MM_1) | (1 << BTN_12MM_2);
+   
+    DDRD &= ~((1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 7));
+    PORTD |= ((1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 7));  // Pull-ups
     
-    DDRB &= ~((1 << BTN_7MM_3) | (1 << BTN_7MM_4) | (1 << BTN_7MM_5));
-    PORTB |= (1 << BTN_7MM_3) | (1 << BTN_7MM_4) | (1 << BTN_7MM_5);
     
-    DDRC &= ~((1 << BTN_7MM_6));
-    PORTC |= (1 << BTN_7MM_6);
+    DDRB &= ~((1 << 0) | (1 << 1));
+    PORTB |= ((1 << 0) | (1 << 1));  // Pull-ups
+    
+    
+    DDRC &= ~((1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4));
+    PORTC |= ((1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4));  // Pull-ups
     
     for (uint8_t i = 0; i < NUM_SWITCHES; i++) {
         switches[i].debounce_ms = DEBOUNCE_TIME_MS;
@@ -71,7 +73,7 @@ bool switches_update(void) {
             if ((current_time - switches[i].last_change_time) > switches[i].debounce_ms) {
                 switches[i].last_state = switches[i].current_state;
                 switches[i].last_change_time = current_time;
-                switches[i].is_pressed = switches[i].current_state;  
+                switches[i].is_pressed = !switches[i].current_state;  // Invert for active-low
                 state_changed = true;
             }
         } else {

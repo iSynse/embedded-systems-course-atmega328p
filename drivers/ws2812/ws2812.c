@@ -11,17 +11,17 @@ static inline void ws2812_send_byte(uint8_t byte) {
     for (uint8_t i = 0; i < 8; i++) {
     
         if (byte & (1 << (7 - i))) {
-   
+            // Send "1": T1H=0.8µs, T1L=0.45µs
             WS2812_PIN_PORT |= (1 << WS2812_PIN_BIT);   // Set high
-            _delay_us(0.8);
+            _delay_us(0.75);
             WS2812_PIN_PORT &= ~(1 << WS2812_PIN_BIT);  // Set low
-            _delay_us(0.45);
+            _delay_us(0.5);
         } else {
-            
+            // Send "0": T0H=0.4µs, T0L=0.85µs
             WS2812_PIN_PORT |= (1 << WS2812_PIN_BIT);   // Set high
-            _delay_us(0.4);
+            _delay_us(0.35);
             WS2812_PIN_PORT &= ~(1 << WS2812_PIN_BIT);  // Set low
-            _delay_us(0.85);
+            _delay_us(0.9);
         }
     }
 }
