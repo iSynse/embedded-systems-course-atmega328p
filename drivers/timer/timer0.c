@@ -1,5 +1,8 @@
 #include "timer0.h"
 
+// Forward declaration
+void systick_increment(void);
+
 // System tick counter, increments every 1ms
 static volatile uint32_t system_millis = 0;
 
@@ -38,6 +41,7 @@ void Timer0_Init(void) {
  */
 ISR(TIMER0_COMPA_vect) {
     system_millis++;
+    systick_increment();
 }
 
 /**

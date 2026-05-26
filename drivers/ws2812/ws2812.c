@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "config.h"
 
 static RGB_Color_t led_buffer[WS2812_COUNT];
 static uint8_t brightness_level = 255;

@@ -9,6 +9,7 @@
 #include "drivers/ws2812/ws2812.h"
 #include "drivers/max7219/max7219.h"
 #include "drivers/input/switches.h"
+#include "drivers/timer/timer0.h"
 #include "logic/gear_control.h"
 #include "logic/speed_simulation.h"
 
@@ -24,11 +25,6 @@ static SteeringWheel_State_t wheel_state = {
 
 volatile uint32_t systick_ms = 0;
 
-ISR(TIMER0_COMPA_vect) {
-    systick_ms++;
-    systick_increment();  
-}
-
 void timer0_init(void) {
 
     TCCR0A = (1 << WGM01);
@@ -38,7 +34,7 @@ void timer0_init(void) {
 }
 
 uint32_t millis(void) {
-    return systick_ms;
+    return Millis();
 }
 
 
@@ -80,8 +76,7 @@ static void system_init(void) {
 
     cli();  
     
-  
-    timer0_init();
+    Timer0_Init();
     switches_init();
     ws2812_init();
     max7219_init();

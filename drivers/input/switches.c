@@ -1,5 +1,6 @@
 #include "switches.h"
 #include <avr/io.h>
+#include "config.h"
 
 #define DEBOUNCE_TIME_MS 20
 
@@ -47,7 +48,7 @@ void systick_increment(void) {
     millis_counter++;
 }
 
-uint32_t millis(void) {
+static uint32_t millis(void) {
     return millis_counter;
 }
 

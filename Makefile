@@ -24,7 +24,7 @@ BINDIR = bin
 
 # Compiler Flags
 CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Os -Wall -Wextra -std=gnu99
-CFLAGS += -I. -Idrivers/gpio -Idrivers/interrupt -Idrivers/timer -Idrivers/eeprom -Idrivers/adc -Ibsp -Iutils -Idrivers/usart
+CFLAGS += -I. -Isrc -Idrivers/gpio -Idrivers/interrupt -Idrivers/timer -Idrivers/eeprom -Idrivers/adc -Ibsp -Iutils -Idrivers/usart -Idrivers/input -Idrivers/pwm -Idrivers/ws2812 -Idrivers/max7219 -Ilogic
 
 ifeq ($(BOARD), nano)
     CFLAGS += -DBOARD_NANO
@@ -35,7 +35,7 @@ else
 endif
 
 # Source Files
-SRC = src/main.c drivers/gpio/gpio.c drivers/interrupt/external_interrupt.c drivers/timer/timer0.c drivers/timer/timer1.c drivers/timer/timer2.c drivers/pwm/pwm.c drivers/eeprom/eeprom.c drivers/adc/adc.c utils/delay.c  drivers/usart/usart.c
+SRC = src/main.c drivers/gpio/gpio.c drivers/interrupt/external_interrupt.c drivers/timer/timer0.c drivers/timer/timer1.c drivers/timer/timer2.c drivers/pwm/pwm.c drivers/eeprom/eeprom.c drivers/adc/adc.c utils/delay.c drivers/usart/usart.c drivers/input/switches.c drivers/ws2812/ws2812.c drivers/max7219/max7219.c logic/gear_control.c logic/speed_simulation.c
 
 # Object Files
 # Replace .c extension with .o and prepend OBJDIR, keeping directory structure
@@ -56,6 +56,11 @@ directories:
 	@mkdir -p $(OBJDIR)/drivers/eeprom
 	@mkdir -p $(OBJDIR)/drivers/adc
 	@mkdir -p $(OBJDIR)/drivers/usart
+	@mkdir -p $(OBJDIR)/drivers/input
+	@mkdir -p $(OBJDIR)/drivers/pwm
+	@mkdir -p $(OBJDIR)/drivers/ws2812
+	@mkdir -p $(OBJDIR)/drivers/max7219
+	@mkdir -p $(OBJDIR)/logic
 	@mkdir -p $(OBJDIR)/utils
 
 $(TARGET).elf: $(OBJ)
