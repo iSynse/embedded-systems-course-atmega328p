@@ -21,20 +21,6 @@ static SteeringWheel_State_t wheel_state = {
     .last_gear_change_time = 0,
 };
 
-volatile uint32_t systick_ms = 0;
-
-void timer0_init(void) {
-
-    TCCR0A = (1 << WGM01);
-    TCCR0B = (1 << CS01) | (1 << CS00); 
-    OCR0A = 249; 
-    TIMSK0 = (1 << OCIE0A);
-}
-
-uint32_t millis(void) {
-    return Millis();
-}
-
 
 static void update_rpm_display(uint8_t rpm_percent) {
  
@@ -71,21 +57,19 @@ static void update_7seg_display(uint8_t gear, uint16_t speed) {
 }
 
 static void system_init(void) {
-
-    cli();  
-    
-    Timer0_Init();
-    switches_init();
-    ws2812_init();
+    // Initialize all systems
+    ws2812_init();  // This also clears LEDs
     max7219_init();
+    switches_init();
     gear_control_init();
     speed_sim_init();
     
-    sei();  
+    // Initialize Timer0 (this enables global interrupts via sei())
+    Timer0_Init();
     
-    
-    ws2812_clear();
-    max7219_display_gear_speed(2, 0);  
+    // Display initial state - Gear N, Speed 0
+    uint8_t initial_gear_display = gear_get_display_value();
+    max7219_display_gear_speed(initial_gear_display, 0);
 }
 
 #define UPDATE_INTERVAL_MS 20
@@ -96,7 +80,7 @@ int main(void) {
     uint32_t last_update_time = 0;
     
     while (1) {
-        uint32_t now = millis();
+        uint32_t now = Millis();
         
        
         if ((now - last_update_time) >= 10) {

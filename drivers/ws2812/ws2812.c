@@ -10,19 +10,19 @@ static uint8_t brightness_level = 255;
 
 static inline void ws2812_send_byte(uint8_t byte) {
     for (uint8_t i = 0; i < 8; i++) {
-    
         if (byte & (1 << (7 - i))) {
-            // Send "1": T1H=0.8µs, T1L=0.45µs
+            // Send "1": T1H=0.8µs, T1L=0.45µs (use 1µs for reliability)
             WS2812_PIN_PORT |= (1 << WS2812_PIN_BIT);   // Set high
-            _delay_us(0.75);
+            _delay_us(1);
             WS2812_PIN_PORT &= ~(1 << WS2812_PIN_BIT);  // Set low
-            _delay_us(0.5);
+            _delay_us(1);
         } else {
-            // Send "0": T0H=0.4µs, T0L=0.85µs
+            // Send "0": T0H=0.4µs, T0L=0.85µs (use conservative timing)
             WS2812_PIN_PORT |= (1 << WS2812_PIN_BIT);   // Set high
-            _delay_us(0.35);
+            // Very short delay for HIGH - use inline NOPs for ~0.2µs
+            asm volatile("nop\n nop\n");
             WS2812_PIN_PORT &= ~(1 << WS2812_PIN_BIT);  // Set low
-            _delay_us(0.9);
+            _delay_us(1);  // Wait for LOW phase
         }
     }
 }
@@ -32,12 +32,18 @@ void ws2812_init(void) {
     WS2812_PIN_DDR |= (1 << WS2812_PIN_BIT);
     WS2812_PIN_PORT &= ~(1 << WS2812_PIN_BIT);  // Start low
     
+    _delay_ms(1);  // Wait for LED strip to be ready
+    
     // Clear LED buffer
     for (uint8_t i = 0; i < WS2812_COUNT; i++) {
         led_buffer[i].r = 0;
         led_buffer[i].g = 0;
         led_buffer[i].b = 0;
     }
+    
+    // Send initial clear command to ensure LEDs are off
+    ws2812_update();
+    _delay_ms(1);  // Wait for update to complete
 }
 
 void ws2812_set_color(uint8_t index, RGB_Color_t color) {

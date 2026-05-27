@@ -26,9 +26,9 @@ Gear_t gear_get_current(void) {
 
 uint8_t gear_get_display_value(void) {
     switch (current_gear) {
-        case GEAR_P: return 0;
-        case GEAR_R: return 10;  // Display "R"
-        case GEAR_N: return 11;  // Display "N"
-        default: return (uint8_t)(current_gear - GEAR_1 + 1);  // gear 1-8
+        case GEAR_P: return 13;  // Display "P"
+        case GEAR_R: return 11;  // Display "R"
+        case GEAR_N: return 12;  // Display "N"
+        default: return (uint8_t)(current_gear - GEAR_1 + 1);  // gear 1-8 display as 1-8
     }
 }

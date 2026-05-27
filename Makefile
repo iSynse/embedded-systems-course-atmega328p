@@ -48,20 +48,7 @@ TARGET = $(BINDIR)/main
 all: directories $(TARGET).hex
 
 directories:
-	@mkdir -p $(BINDIR)
-	@mkdir -p $(OBJDIR)/src
-	@mkdir -p $(OBJDIR)/drivers/gpio
-	@mkdir -p $(OBJDIR)/drivers/interrupt
-	@mkdir -p $(OBJDIR)/drivers/timer
-	@mkdir -p $(OBJDIR)/drivers/eeprom
-	@mkdir -p $(OBJDIR)/drivers/adc
-	@mkdir -p $(OBJDIR)/drivers/usart
-	@mkdir -p $(OBJDIR)/drivers/input
-	@mkdir -p $(OBJDIR)/drivers/pwm
-	@mkdir -p $(OBJDIR)/drivers/ws2812
-	@mkdir -p $(OBJDIR)/drivers/max7219
-	@mkdir -p $(OBJDIR)/logic
-	@mkdir -p $(OBJDIR)/utils
+	@echo "Directories already created"
 
 $(TARGET).elf: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -70,7 +57,6 @@ $(TARGET).hex: $(TARGET).elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 $(OBJDIR)/%.o: %.c
-	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 flash: $(TARGET).hex

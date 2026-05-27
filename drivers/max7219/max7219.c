@@ -2,7 +2,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-// 7-segment patterns for digits 0-9
+// 7-segment patterns for digits 0-9, and letters R, N, P, and blank
+// Index 0-9: digits, 10: blank, 11: R, 12: N, 13: P
 static const uint8_t segment_patterns[] = {
     0x7E,  // 0: 01111110
     0x30,  // 1: 00110000
@@ -13,7 +14,11 @@ static const uint8_t segment_patterns[] = {
     0x5F,  // 6: 01011111
     0x70,  // 7: 01110000
     0x7F,  // 8: 01111111
-    0x7B   // 9: 01111011
+    0x7B,  // 9: 01011011
+    0x00,  // 10: blank/space
+    0x05,  // 11: R (01010101)
+    0x37,  // 12: N (00110111)
+    0x73   // 13: P (01110011)
 };
 
 
@@ -68,8 +73,8 @@ void max7219_display_digit(uint8_t position, uint8_t digit) {
     uint8_t reg = MAX7219_REG_DIG0 + position;
     uint8_t pattern;
     
-    if (digit > 9) {
-        pattern = 0x00;  // Blank
+    if (digit > 13) {
+        pattern = 0x00;  // Blank for invalid digits
     } else {
         pattern = segment_patterns[digit];
     }
@@ -89,7 +94,7 @@ void max7219_display_gear_speed(uint8_t gear, uint16_t speed) {
     if (speed >= 100) {
         max7219_display_digit(1, (speed / 100) % 10);
     } else {
-        max7219_display_digit(1, 10);  // Blank (invalid digit value)
+        max7219_display_digit(1, 10);  // 10 = blank pattern
     }
     
 
