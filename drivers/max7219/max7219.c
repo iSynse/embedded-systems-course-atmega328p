@@ -2,6 +2,20 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+// 7-segment patterns for digits 0-9
+static const uint8_t segment_patterns[] = {
+    0x7E,  // 0: 01111110
+    0x30,  // 1: 00110000
+    0x6D,  // 2: 01101101
+    0x79,  // 3: 01111001
+    0x33,  // 4: 00110011
+    0x5B,  // 5: 01011011
+    0x5F,  // 6: 01011111
+    0x70,  // 7: 01110000
+    0x7F,  // 8: 01111111
+    0x7B   // 9: 01111011
+};
+
 
 static void spi_init(void) {
   
@@ -20,16 +34,15 @@ void max7219_init(void) {
     spi_init();
     _delay_ms(100);  
     
-    
     max7219_write_register(MAX7219_REG_SHUTDOWN, 1);
-    max7219_write_register(MAX7219_REG_DECODE, 0xFF);      
-    max7219_write_register(MAX7219_REG_SCAN_LIMIT, 3);     
-    max7219_write_register(MAX7219_REG_INTENSITY, 8);     
+    max7219_write_register(MAX7219_REG_DECODE, 0x00);       // Disable BCD decode - use raw patterns
+    max7219_write_register(MAX7219_REG_SCAN_LIMIT, 3);      // 4 digits
+    max7219_write_register(MAX7219_REG_INTENSITY, 10);      // Brightness
     max7219_write_register(MAX7219_REG_DISP_TEST, 0);   
     
-   
+    // Clear all digits
     for (uint8_t i = 0; i < 4; i++) {
-        max7219_write_register(MAX7219_REG_DIG0 + i, 0x0F);  
+        max7219_write_register(MAX7219_REG_DIG0 + i, 0x00);  
     }
 }
 
@@ -52,14 +65,16 @@ void max7219_write_register(uint8_t address, uint8_t data) {
 void max7219_display_digit(uint8_t position, uint8_t digit) {
     if (position > 3) return; 
     
-  
-    uint8_t reg = MAX7219_REG_DIG0 + position + 1;
+    uint8_t reg = MAX7219_REG_DIG0 + position;
+    uint8_t pattern;
     
     if (digit > 9) {
-        digit = 0x0F;  
+        pattern = 0x00;  // Blank
+    } else {
+        pattern = segment_patterns[digit];
     }
     
-    max7219_write_register(reg, digit);
+    max7219_write_register(reg, pattern);
 }
 
 void max7219_display_gear_speed(uint8_t gear, uint16_t speed) {
@@ -74,13 +89,13 @@ void max7219_display_gear_speed(uint8_t gear, uint16_t speed) {
     if (speed >= 100) {
         max7219_display_digit(1, (speed / 100) % 10);
     } else {
-        max7219_display_digit(1, 0x0F);  
+        max7219_display_digit(1, 10);  // Blank (invalid digit value)
     }
     
-  
+
     max7219_display_digit(2, speed_tens);
     
-  
+
     max7219_display_digit(3, speed_ones);
 }
 
